@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.Vector;
+
 public class KingPiece extends BaseDecorator {
 
     public KingPiece(BasePiece basePiece) {
@@ -10,12 +13,21 @@ public class KingPiece extends BaseDecorator {
     }
 
     @Override
-    public void checkIfCanMove() {
-        getWrappee().setCanMove(false);
+    public void updateLegalNonTakeMoves() {
+        ArrayList<Vector> moves = new ArrayList<>();
+
+        //code for finding legal moves
+
+        getWrappee().setLegalNonTakeMoves(moves);
     }
 
     @Override
-    public void checkIfCanTake() {
-        getWrappee().setCanTake(false);
+    public boolean updateLegalTakeMoves() {
+        ArrayList<Vector> moves = new ArrayList<>();
+
+        //code for finding legal moves
+
+        getWrappee().setLegalTakeMoves(moves);
+        return !moves.isEmpty();
     }
 }

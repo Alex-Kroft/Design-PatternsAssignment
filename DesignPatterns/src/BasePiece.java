@@ -1,12 +1,16 @@
+import java.util.ArrayList;
+import java.util.Vector;
+
 public class BasePiece implements GamePiece {
     private Enum<PieceColor> color;
-    private int posX;
-    private int posY;
-    private boolean canMove;
-    private boolean canTake;
+    private Vector position;
+    private ArrayList<Vector> legalNonTakeMoves;
+    private ArrayList<Vector> legalTakeMoves;
 
     public BasePiece(PieceColor color){
         this.color = color;
+        legalNonTakeMoves = new ArrayList<>();
+        legalTakeMoves = new ArrayList<>();
     }
 
     public Enum<PieceColor> getColor() {
@@ -17,36 +21,28 @@ public class BasePiece implements GamePiece {
         this.color = color;
     }
 
-    public int getPosX() {
-        return posX;
+    public Vector getPosition() {
+        return position;
     }
 
-    public void setPosX(int posX) {
-        this.posX = posX;
+    public void setPosition(Vector position) {
+        this.position = position;
     }
 
-    public int getPosY() {
-        return posY;
+    public ArrayList<Vector> getLegalNonTakeMoves() {
+        return legalNonTakeMoves;
     }
 
-    public void setPosY(int posY) {
-        this.posY = posY;
+    public void setLegalNonTakeMoves(ArrayList<Vector> legalNonTakeMoves) {
+        this.legalNonTakeMoves = legalNonTakeMoves;
     }
 
-    public boolean canMove() {
-        return canMove;
+    public ArrayList<Vector> getLegalTakeMoves() {
+        return legalTakeMoves;
     }
 
-    public void setCanMove(boolean canMove) {
-        this.canMove = canMove;
-    }
-
-    public boolean canTake() {
-        return canTake;
-    }
-
-    public void setCanTake(boolean canTake) {
-        this.canTake = canTake;
+    public void setLegalTakeMoves(ArrayList<Vector> legalTakeMoves) {
+        this.legalTakeMoves = legalTakeMoves;
     }
 
     @Override
@@ -55,12 +51,21 @@ public class BasePiece implements GamePiece {
     }
 
     @Override
-    public void checkIfCanMove() {
-        setCanMove(false);
+    public void updateLegalNonTakeMoves() {
+        ArrayList<Vector> moves = new ArrayList<>();
+
+        //code for finding legal moves
+
+        setLegalNonTakeMoves(moves);
     }
 
     @Override
-    public void checkIfCanTake() {
-        setCanTake(false);
+    public boolean updateLegalTakeMoves() {
+        ArrayList<Vector> moves = new ArrayList<>();
+
+
+
+        setLegalTakeMoves(moves);
+        return !moves.isEmpty();
     }
 }
