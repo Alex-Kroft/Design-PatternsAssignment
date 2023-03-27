@@ -1,12 +1,11 @@
 public abstract class BaseDecorator implements GamePiece {
-    private BasePiece wrappee;
+    private final BasePiece wrappee;
 
     public BaseDecorator(BasePiece basePiece) {
-
+        wrappee = basePiece;
     }
 
-
-    public abstract boolean checkIfCanMove();
-
-    public abstract boolean checkIfCanTake();
+    public BasePiece getWrappee() {
+        return wrappee;
+    }
 }

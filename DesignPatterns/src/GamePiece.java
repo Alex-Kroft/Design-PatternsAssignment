@@ -1,11 +1,14 @@
 public interface GamePiece {
 
-    public boolean checkIfCanMove();
+    public void checkIfCanMove();
 
-    public boolean checkIfCanTake();
+    public void checkIfCanTake();
 
     public void move(int x, int y);
 
-    public void update();
+    public default void update() {
+        checkIfCanMove();
+        checkIfCanTake();
+    }
 
 }

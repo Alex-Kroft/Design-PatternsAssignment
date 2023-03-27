@@ -1,5 +1,4 @@
 public class KingPiece extends BaseDecorator {
-    private BasePiece basePiece;
 
     public KingPiece(BasePiece basePiece) {
         super(basePiece);
@@ -11,17 +10,12 @@ public class KingPiece extends BaseDecorator {
     }
 
     @Override
-    public void update() {
-
+    public void checkIfCanMove() {
+        getWrappee().setCanMove(false);
     }
 
     @Override
-    public boolean checkIfCanMove() {
-        return false;
-    }
-
-    @Override
-    public boolean checkIfCanTake() {
-        return false;
+    public void checkIfCanTake() {
+        getWrappee().setCanTake(false);
     }
 }

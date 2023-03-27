@@ -1,27 +1,49 @@
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 
 public class PiecePool {
-    private ArrayList<GamePiece> playerOnePieces;
-    private ArrayList<GamePiece> playerTwoPieces;
+    private final ArrayList<GamePiece> playerOnePiecesAvailable = new ArrayList<>();
+    private ArrayList<GamePiece> playerOnePiecesInUse = new ArrayList<>();
+    private final ArrayList<GamePiece> playerTwoPiecesAvailable = new ArrayList<>();
+    private ArrayList<GamePiece> playerTwoPiecesInUse = new ArrayList<>();
 
-    private PiecePool() {
 
-    }
-
-    static PiecePool getInstance() {
-        return null;
-    }
-
-    private void createPieces() {
-
+    public synchronized void checkIn(GamePiece piece) {
+        if(playerOnePiecesInUse.contains(piece)) {
+            playerOnePiecesInUse.remove(piece);
+            playerOnePiecesAvailable.add(piece);
+        } else if (playerTwoPiecesInUse.contains(piece)) {
+            playerTwoPiecesInUse.remove(piece);
+            playerTwoPiecesAvailable.add(piece);
+        } else {
+            throw new NoSuchElementException();
+        }
     }
 
     public ArrayList<GamePiece> acquirePlayerOnePieces() {
-        return null;
+        if(playerOnePiecesInUse.isEmpty()) {
+            if(playerOnePiecesAvailable.isEmpty()) {
+                for (int i = 0; i < 12; i++) {
+                    playerOnePiecesInUse.add(PieceFactory.getGamePiece(PieceColor.RED));
+                }
+            } else {
+                playerOnePiecesInUse = playerOnePiecesAvailable;
+            }
+        }
+        return playerOnePiecesInUse;
     }
 
     public ArrayList<GamePiece> acquirePlayerTwoPieces() {
-        return null;
+        if(playerTwoPiecesInUse.isEmpty()) {
+            if(playerTwoPiecesAvailable.isEmpty()) {
+                for (int i = 0; i < 12; i++) {
+                    playerTwoPiecesInUse.add(PieceFactory.getGamePiece(PieceColor.BLACK));
+                }
+            } else {
+                playerTwoPiecesInUse = playerTwoPiecesAvailable;
+            }
+        }
+        return playerTwoPiecesInUse;
     }
 
 }
