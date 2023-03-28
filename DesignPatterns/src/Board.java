@@ -12,6 +12,8 @@ public class Board extends JPanel implements MouseListener {
     private BoardObserver boardObserver;
     private final int squareSize = 50;
     private final int boardSize = 8;
+    private GamePiece selectedPiece;
+    private ArrayList<Vector<Integer>> selectedPieceAvailableMoves;
 
     public Board() {
         pool = new PiecePool();
@@ -19,6 +21,8 @@ public class Board extends JPanel implements MouseListener {
         boardObserver = new BoardObserver(playerOnePieces, playerTwoPieces);
         givePiecesStartingPositions();
         addMouseListener(this);
+        selectedPiece = null;
+        notifyObserver();
     }
 
     public ArrayList<GamePiece> getPlayerOnePieces() {
@@ -45,11 +49,13 @@ public class Board extends JPanel implements MouseListener {
         this.pool = pool;
     }
 
-    public void movePiece(GamePiece piece, int posX, int posY) {
-
+    public void movePiece(GamePiece piece, Vector<Integer> target) {
+        piece.move(target);
+        notifyObserver();
     }
 
     private void removePiece(GamePiece piece) {
+        boardObserver.unsubscribe(piece);
         pool.checkIn(piece);
     }
 
@@ -107,12 +113,26 @@ public class Board extends JPanel implements MouseListener {
             }
         }
 
+        if (selectedPiece != null) {
+            if (!selectedPieceAvailableMoves.isEmpty()) {
+                // Highlight available moves
+                g.setColor(new Color(255, 255, 0, 128));
+                for (Vector<Integer> move : selectedPieceAvailableMoves) {
+                    int x = move.get(0) * squareSize;
+                    int y = move.get(1) * squareSize;
+                    g.fillRect(x, y, squareSize, squareSize);
+                }
+            }
+        }
+
         // Draw the pieces on the board
-        DrawEachGamePiece(g, playerOnePieces);
-        DrawEachGamePiece(g, playerTwoPieces);
+        drawEachGamePiece(g);
     }
 
-    private void DrawEachGamePiece(Graphics g, ArrayList<GamePiece> playerPieces) {
+    private void drawEachGamePiece(Graphics g) {
+        ArrayList<GamePiece> playerPieces = new ArrayList<>();
+        playerPieces.addAll(playerOnePieces);
+        playerPieces.addAll(playerTwoPieces);
         for (GamePiece piece : playerPieces) {
             Vector<Integer> position = piece.getPosition();
             int x = position.get(0) * squareSize;
@@ -146,15 +166,25 @@ public class Board extends JPanel implements MouseListener {
         clickPosition.add(row);
         System.out.println("clicked");
 
-        for (GamePiece piece: playerOnePieces) {
-            System.out.println(piece.getPosition());
-            if (piece.getPosition().equals(clickPosition)) {
-
-                ArrayList<GamePiece> allPieces = new ArrayList<>();
-
-                piece.updateTakes(allPieces);
+        if (selectedPiece != null) {
+            if (selectedPieceAvailableMoves.contains(clickPosition)) {
+                movePiece(selectedPiece, clickPosition);
+            }
+            selectedPiece = null;
+            selectedPieceAvailableMoves = null;
+        } else {
+            // Check if a piece was clicked
+            for (GamePiece piece : playerOnePieces) {
+                if (piece.getPosition().equals(clickPosition)) {
+                    selectedPiece = piece;
+                    selectedPieceAvailableMoves = new ArrayList<>();
+                    selectedPieceAvailableMoves.addAll(selectedPiece.getLegalNonTakeMoves());
+                    selectedPieceAvailableMoves.addAll(selectedPiece.getLegalTakeMoves());
+                    break;
+                }
             }
         }
+        repaint();
     }
 
     @Override

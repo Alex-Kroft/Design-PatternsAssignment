@@ -50,11 +50,6 @@ public class BasePiece implements GamePiece {
     }
 
     @Override
-    public void move(int x, int y) {
-
-    }
-
-    @Override
     public boolean updateTakes(ArrayList<GamePiece> pieces) {
         return updateLegalTakeMoves(pieces);
     }
@@ -72,36 +67,38 @@ public class BasePiece implements GamePiece {
         // Add the moves to take pieces diagonally
         ArrayList<Vector<Integer>> diagonalMoves = new ArrayList<>();
         if (this.getColor() == PieceColor.BLACK) {
+            Vector<Integer> DR = new Vector<>();
+            DR.add(1);
+            DR.add(1);
+            diagonalMoves.add(DR);
+
+            Vector<Integer> DL = new Vector<>();
+            DL.add(-1);
+            DL.add(1);
+            diagonalMoves.add(DL);
+        } else {
             Vector<Integer> UL = new Vector<>();
             UL.add(-1);
             UL.add(-1);
             diagonalMoves.add(UL);
 
-            Vector<Integer> DL = new Vector<>();
-            DL.add(1);
-            DL.add(-1);
-            diagonalMoves.add(DL);
-        } else {
             Vector<Integer> UR = new Vector<>();
-            UR.add(-1);
             UR.add(1);
+            UR.add(-1);
             diagonalMoves.add(UR);
-
-            Vector<Integer> DR = new Vector<>();
-            DR.add(1);
-            DR.add(1);
-            diagonalMoves.add(DR);
         }
 
-
         for (Vector<Integer> move : diagonalMoves) {
-            Vector<Integer> target = position;
+            Vector<Integer> target = new Vector<>();
+            int targetX = position.get(0)+move.get(0);
+            int targetY = position.get(1)+move.get(1);
 
-            target.set(0, position.get(0)+move.get(0));
-            target.set(0, position.get(1)+move.get(1));
+            target.add(targetX);
+            target.add(targetY);
 
-            boolean possible = true;
+            boolean possible = false;
             if (target.get(0) >= 0 && target.get(0) <= 7 && target.get(1) >= 0 && target.get(1) <= 7) {
+                possible = true;
                 for (GamePiece piece: pieces) {
                     if (piece.getPosition().equals(target)) {
                         possible = false;
@@ -144,13 +141,18 @@ public class BasePiece implements GamePiece {
         diagonalMoves.add(DR);
 
         for (Vector<Integer> move : diagonalMoves) {
-            Vector<Integer> target = position;
-            Vector<Integer> toBeTakenPosition = position;
-
-            toBeTakenPosition.set(0, position.get(0)+move.get(0));
-            toBeTakenPosition.set(0, position.get(1)+move.get(1));
+            Vector<Integer> target = new Vector<>();
+            target.add(position.get(0));
+            target.add(position.get(1));
             target.set(0, position.get(0)+move.get(0)*2);
             target.set(0, position.get(1)+move.get(1)*2);
+
+            Vector<Integer> toBeTakenPosition = new Vector<>();
+            toBeTakenPosition.add(position.get(0));
+            toBeTakenPosition.add(position.get(1));
+            toBeTakenPosition.set(0, position.get(0)+move.get(0));
+            toBeTakenPosition.set(0, position.get(1)+move.get(1));
+
             if (target.get(0) >= 0 && target.get(0) <= 7 && target.get(1) >= 0 && target.get(1) <= 7) {
                 for (GamePiece piece: pieces
                      ) {

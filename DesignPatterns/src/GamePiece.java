@@ -7,14 +7,16 @@ public interface GamePiece {
 
     boolean updateLegalTakeMoves(ArrayList<GamePiece> pieces);
 
-    void move(int x, int y);
+    default void move(Vector<Integer> target) {
+        setPosition(target);
+    }
 
     default boolean updateTakes(ArrayList<GamePiece> pieces) {
-        return updateLegalTakeMoves(pieces);
+        return false;
     }
 
     default void updateMoves(ArrayList<GamePiece> pieces) {
-        updateLegalNonTakeMoves(pieces);
+
     }
 
     Vector<Integer> getPosition();

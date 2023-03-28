@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 
 public class BoardObserver {
-    private ArrayList<GamePiece> pieces;
+    private final ArrayList<GamePiece> pieces;
 
     public BoardObserver(ArrayList<GamePiece> playerOnePieces, ArrayList<GamePiece> playerTwoPieces) {
         this.pieces = new ArrayList<>();
@@ -16,5 +16,14 @@ public class BoardObserver {
                 isTakePossible = true;
             }
         }
+        if (!isTakePossible) {
+            for (GamePiece piece: pieces) {
+                piece.updateMoves(pieces);
+            }
+        }
+    }
+
+    public void unsubscribe(GamePiece piece) {
+        pieces.remove(piece);
     }
 }

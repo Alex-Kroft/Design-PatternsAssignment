@@ -8,7 +8,7 @@ public class KingPiece extends BaseDecorator {
     }
 
     @Override
-    public void move(int x, int y) {
+    public void move(Vector<Integer> target) {
 
     }
 
