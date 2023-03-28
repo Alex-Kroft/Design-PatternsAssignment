@@ -66,7 +66,7 @@ public class BasePiece implements GamePiece {
 
     @Override
     public void updateLegalNonTakeMoves(ArrayList<GamePiece> pieces) {
-        legalTakeMoves.clear();
+        legalNonTakeMoves.clear();
 
         // Calculate the moves that allow a take
         // Add the moves to take pieces diagonally
@@ -93,11 +93,13 @@ public class BasePiece implements GamePiece {
             diagonalMoves.add(DR);
         }
 
+
         for (Vector<Integer> move : diagonalMoves) {
             Vector<Integer> target = position;
 
             target.set(0, position.get(0)+move.get(0));
             target.set(0, position.get(1)+move.get(1));
+
             boolean possible = true;
             if (target.get(0) >= 0 && target.get(0) <= 7 && target.get(1) >= 0 && target.get(1) <= 7) {
                 for (GamePiece piece: pieces) {

@@ -64,8 +64,6 @@ public class Board extends JPanel implements MouseListener {
 
     private void givePiecesStartingPositions() {
         int placingIndex = 0;
-        System.out.println(playerOnePieces);
-        System.out.println(playerTwoPieces);
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 4; j++) {
                 int x1 = j*2 + (1 - (i %2));
@@ -146,17 +144,15 @@ public class Board extends JPanel implements MouseListener {
         Vector<Integer> clickPosition = new Vector<>();
         clickPosition.add(col);
         clickPosition.add(row);
+        System.out.println("clicked");
 
         for (GamePiece piece: playerOnePieces) {
+            System.out.println(piece.getPosition());
             if (piece.getPosition().equals(clickPosition)) {
 
                 ArrayList<GamePiece> allPieces = new ArrayList<>();
 
                 piece.updateTakes(allPieces);
-                piece.updateMoves(allPieces);
-
-                System.out.println(piece.getLegalTakeMoves());
-                System.out.println(piece.getLegalNonTakeMoves());
             }
         }
     }
