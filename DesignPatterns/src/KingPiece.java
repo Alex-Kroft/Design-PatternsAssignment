@@ -30,4 +30,9 @@ public class KingPiece extends BaseDecorator {
         getWrappee().setLegalTakeMoves(moves);
         return !moves.isEmpty();
     }
+
+    @Override
+    public Vector getPosition() {
+        return getWrappee().getPosition();
+    }
 }

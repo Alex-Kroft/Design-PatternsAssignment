@@ -20,7 +20,7 @@ public class PiecePool {
         }
     }
 
-    public ArrayList<GamePiece> acquirePlayerOnePieces() {
+    public synchronized ArrayList<GamePiece> acquirePlayerOnePieces() {
         if(playerOnePiecesInUse.isEmpty()) {
             if(playerOnePiecesAvailable.isEmpty()) {
                 for (int i = 0; i < 12; i++) {
@@ -33,7 +33,7 @@ public class PiecePool {
         return playerOnePiecesInUse;
     }
 
-    public ArrayList<GamePiece> acquirePlayerTwoPieces() {
+    public synchronized ArrayList<GamePiece> acquirePlayerTwoPieces() {
         if(playerTwoPiecesInUse.isEmpty()) {
             if(playerTwoPiecesAvailable.isEmpty()) {
                 for (int i = 0; i < 12; i++) {
