@@ -30,6 +30,7 @@ public class PiecePool {
                 playerOnePiecesInUse = playerOnePiecesAvailable;
             }
         }
+
         return playerOnePiecesInUse;
     }
 

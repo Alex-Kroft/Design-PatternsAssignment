@@ -9,12 +9,15 @@ public class Board extends JPanel implements MouseListener {
     private ArrayList<GamePiece> playerOnePieces;
     private ArrayList<GamePiece> playerTwoPieces;
     private PiecePool pool;
+    private BoardObserver boardObserver;
     private final int squareSize = 50;
     private final int boardSize = 8;
 
     public Board() {
         pool = new PiecePool();
         acquirePieces();
+        boardObserver = new BoardObserver(playerOnePieces, playerTwoPieces);
+        givePiecesStartingPositions();
         addMouseListener(this);
     }
 
@@ -57,11 +60,12 @@ public class Board extends JPanel implements MouseListener {
     public void acquirePieces() {
         playerOnePieces = pool.acquirePlayerOnePieces();
         playerTwoPieces = pool.acquirePlayerTwoPieces();
-        givePiecesStartingPositions();
     }
 
     private void givePiecesStartingPositions() {
         int placingIndex = 0;
+        System.out.println(playerOnePieces);
+        System.out.println(playerTwoPieces);
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 4; j++) {
                 int x1 = j*2 + (1 - (i %2));
@@ -78,6 +82,7 @@ public class Board extends JPanel implements MouseListener {
 
                 playerTwoPieces.get(placingIndex).setPosition(position1);
                 playerOnePieces.get(placingIndex).setPosition(position2);
+
                 placingIndex++;
             }
         }
@@ -109,8 +114,8 @@ public class Board extends JPanel implements MouseListener {
         DrawEachGamePiece(g, playerTwoPieces);
     }
 
-    private void DrawEachGamePiece(Graphics g, ArrayList<GamePiece> playerTwoPieces) {
-        for (GamePiece piece : playerTwoPieces) {
+    private void DrawEachGamePiece(Graphics g, ArrayList<GamePiece> playerPieces) {
+        for (GamePiece piece : playerPieces) {
             Vector<Integer> position = piece.getPosition();
             int x = position.get(0) * squareSize;
             int y = position.get(1) * squareSize;
@@ -124,6 +129,9 @@ public class Board extends JPanel implements MouseListener {
         }
     }
 
+    public void notifyObserver() {
+        boardObserver.notifyOfMove();
+    }
 
     @Override
     public void mouseClicked(MouseEvent e) {
@@ -139,10 +147,16 @@ public class Board extends JPanel implements MouseListener {
         clickPosition.add(col);
         clickPosition.add(row);
 
-        for (GamePiece piece: playerOnePieces
-             ) {
+        for (GamePiece piece: playerOnePieces) {
             if (piece.getPosition().equals(clickPosition)) {
-                System.out.println("WOOOOOOO");
+
+                ArrayList<GamePiece> allPieces = new ArrayList<>();
+
+                piece.updateTakes(allPieces);
+                piece.updateMoves(allPieces);
+
+                System.out.println(piece.getLegalTakeMoves());
+                System.out.println(piece.getLegalNonTakeMoves());
             }
         }
     }

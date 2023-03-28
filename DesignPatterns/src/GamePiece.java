@@ -1,24 +1,29 @@
+import java.util.ArrayList;
 import java.util.Vector;
 
 public interface GamePiece {
 
-    public void updateLegalNonTakeMoves();
+    void updateLegalNonTakeMoves(ArrayList<GamePiece> pieces);
 
-    public boolean updateLegalTakeMoves();
+    boolean updateLegalTakeMoves(ArrayList<GamePiece> pieces);
 
-    public void move(int x, int y);
+    void move(int x, int y);
 
-    public default void updateTake() {
-        updateLegalTakeMoves();
+    default boolean updateTakes(ArrayList<GamePiece> pieces) {
+        return updateLegalTakeMoves(pieces);
     }
 
-    public default void updateMove() {
-        updateLegalNonTakeMoves();
+    default void updateMoves(ArrayList<GamePiece> pieces) {
+        updateLegalNonTakeMoves(pieces);
     }
 
-    public Vector<Integer> getPosition();
+    Vector<Integer> getPosition();
 
-    public void setPosition(Vector<Integer> position);
+    void setPosition(Vector<Integer> position);
 
-    public Enum<PieceColor> getColor();
+    Enum<PieceColor> getColor();
+
+    ArrayList<Vector<Integer>> getLegalNonTakeMoves();
+
+    ArrayList<Vector<Integer>> getLegalTakeMoves();
 }

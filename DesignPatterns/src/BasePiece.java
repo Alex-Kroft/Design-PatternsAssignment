@@ -7,6 +7,7 @@ public class BasePiece implements GamePiece {
     private ArrayList<Vector<Integer>> legalNonTakeMoves;
     private ArrayList<Vector<Integer>> legalTakeMoves;
 
+
     public BasePiece(PieceColor color){
         this.color = color;
         this.position = new Vector<>();
@@ -54,31 +55,111 @@ public class BasePiece implements GamePiece {
     }
 
     @Override
-    public void updateTake() {
-        GamePiece.super.updateTake();
+    public boolean updateTakes(ArrayList<GamePiece> pieces) {
+        return updateLegalTakeMoves(pieces);
     }
 
     @Override
-    public void updateMove() {
-        GamePiece.super.updateMove();
+    public void updateMoves(ArrayList<GamePiece> pieces) {
+        updateLegalNonTakeMoves(pieces);
     }
 
     @Override
-    public void updateLegalNonTakeMoves() {
-        ArrayList<Vector<Integer>> moves = new ArrayList<>();
+    public void updateLegalNonTakeMoves(ArrayList<GamePiece> pieces) {
+        legalTakeMoves.clear();
 
-        //code for finding legal moves
+        // Calculate the moves that allow a take
+        // Add the moves to take pieces diagonally
+        ArrayList<Vector<Integer>> diagonalMoves = new ArrayList<>();
+        if (this.getColor() == PieceColor.BLACK) {
+            Vector<Integer> UL = new Vector<>();
+            UL.add(-1);
+            UL.add(-1);
+            diagonalMoves.add(UL);
 
-        setLegalNonTakeMoves(moves);
+            Vector<Integer> DL = new Vector<>();
+            DL.add(1);
+            DL.add(-1);
+            diagonalMoves.add(DL);
+        } else {
+            Vector<Integer> UR = new Vector<>();
+            UR.add(-1);
+            UR.add(1);
+            diagonalMoves.add(UR);
+
+            Vector<Integer> DR = new Vector<>();
+            DR.add(1);
+            DR.add(1);
+            diagonalMoves.add(DR);
+        }
+
+        for (Vector<Integer> move : diagonalMoves) {
+            Vector<Integer> target = position;
+
+            target.set(0, position.get(0)+move.get(0));
+            target.set(0, position.get(1)+move.get(1));
+            boolean possible = true;
+            if (target.get(0) >= 0 && target.get(0) <= 7 && target.get(1) >= 0 && target.get(1) <= 7) {
+                for (GamePiece piece: pieces) {
+                    if (piece.getPosition().equals(target)) {
+                        possible = false;
+                        break;
+                    }
+                }
+            }
+            if (possible) {
+                legalNonTakeMoves.add(target);
+            }
+        }
     }
 
     @Override
-    public boolean updateLegalTakeMoves() {
-        ArrayList<Vector<Integer>> moves = new ArrayList<>();
+    public boolean updateLegalTakeMoves(ArrayList<GamePiece> pieces) {
+        legalTakeMoves.clear();
 
+        // Calculate the moves that allow a take
+        // Add the moves to take pieces diagonally
+        ArrayList<Vector<Integer>> diagonalMoves = new ArrayList<>();
 
+        Vector<Integer> UL = new Vector<>();
+        UL.add(-1);
+        UL.add(-1);
+        diagonalMoves.add(UL);
 
-        setLegalTakeMoves(moves);
-        return !moves.isEmpty();
+        Vector<Integer> UR = new Vector<>();
+        UR.add(-1);
+        UR.add(1);
+        diagonalMoves.add(UR);
+
+        Vector<Integer> DL = new Vector<>();
+        DL.add(1);
+        DL.add(-1);
+        diagonalMoves.add(DL);
+
+        Vector<Integer> DR = new Vector<>();
+        DR.add(1);
+        DR.add(1);
+        diagonalMoves.add(DR);
+
+        for (Vector<Integer> move : diagonalMoves) {
+            Vector<Integer> target = position;
+            Vector<Integer> toBeTakenPosition = position;
+
+            toBeTakenPosition.set(0, position.get(0)+move.get(0));
+            toBeTakenPosition.set(0, position.get(1)+move.get(1));
+            target.set(0, position.get(0)+move.get(0)*2);
+            target.set(0, position.get(1)+move.get(1)*2);
+            if (target.get(0) >= 0 && target.get(0) <= 7 && target.get(1) >= 0 && target.get(1) <= 7) {
+                for (GamePiece piece: pieces
+                     ) {
+                    if (piece.getPosition().equals(toBeTakenPosition) && piece.getColor() != this.getColor()) {
+                        legalTakeMoves.add(target);
+                        break;
+                    }
+                }
+            }
+        }
+
+        return !legalTakeMoves.isEmpty();
     }
 }
