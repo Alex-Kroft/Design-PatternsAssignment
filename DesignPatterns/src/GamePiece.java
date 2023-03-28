@@ -1,3 +1,5 @@
+import java.util.Vector;
+
 public interface GamePiece {
 
     public void updateLegalNonTakeMoves();
@@ -14,4 +16,9 @@ public interface GamePiece {
         updateLegalNonTakeMoves();
     }
 
+    public Vector<Integer> getPosition();
+
+    public void setPosition(Vector<Integer> position);
+
+    public Enum<PieceColor> getColor();
 }

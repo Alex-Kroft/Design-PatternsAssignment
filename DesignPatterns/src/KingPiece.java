@@ -14,7 +14,7 @@ public class KingPiece extends BaseDecorator {
 
     @Override
     public void updateLegalNonTakeMoves() {
-        ArrayList<Vector> moves = new ArrayList<>();
+        ArrayList<Vector<Integer>> moves = new ArrayList<>();
 
         //code for finding legal moves
 
@@ -23,7 +23,7 @@ public class KingPiece extends BaseDecorator {
 
     @Override
     public boolean updateLegalTakeMoves() {
-        ArrayList<Vector> moves = new ArrayList<>();
+        ArrayList<Vector<Integer>> moves = new ArrayList<>();
 
         //code for finding legal moves
 
@@ -32,7 +32,17 @@ public class KingPiece extends BaseDecorator {
     }
 
     @Override
-    public Vector getPosition() {
+    public Vector<Integer> getPosition() {
         return getWrappee().getPosition();
+    }
+
+    @Override
+    public void setPosition(Vector<Integer> position) {
+        getWrappee().setPosition(position);
+    }
+
+    @Override
+    public Enum<PieceColor> getColor() {
+        return getWrappee().getColor();
     }
 }
