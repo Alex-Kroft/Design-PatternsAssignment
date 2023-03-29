@@ -2,10 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Random;
-import java.util.Vector;
+import java.util.*;
 
 public class Board extends JPanel implements MouseListener {
     private ArrayList<GamePiece> playerOnePieces;
@@ -75,14 +72,48 @@ public class Board extends JPanel implements MouseListener {
     }
 
     public void movePiece(GamePiece piece, Vector<Integer> target) {
+        Vector<Integer> piecePosition = piece.getPosition();
         piece.move(target);
+        removePieces(piecePosition, target);
         setPlayerTurn(false);
         notifyObserver();
     }
 
-    private void removePiece(GamePiece piece) {
-        boardObserver.unsubscribe(piece);
-        pool.checkIn(piece);
+    private void removePieces(Vector<Integer> start, Vector<Integer> finish) {
+        int startX = start.get(0);
+        int startY = start.get(1);
+        int finishX = finish.get(0);
+        int finishY = finish.get(1);
+
+        int deltaX = (finishX > startX) ? 1 : -1;
+        int deltaY = (finishY > startY) ? 1 : -1;
+
+        int x = startX + deltaX;
+        int y = startY + deltaY;
+
+        ArrayList<GamePiece> piecesToRemove = new ArrayList<>();
+
+        while (x != finishX && y != finishY) {
+            Vector<Integer> remove = new Vector<>();
+            remove.add(x);
+            remove.add(y);
+
+            for (GamePiece piece: playerOnePieces) {
+                if (piece.getPosition().equals(remove)) {
+                    piecesToRemove.add(piece);
+                }
+            }
+
+            x += deltaX;
+            y += deltaY;
+        }
+
+        for (GamePiece piece: piecesToRemove) {
+            boardObserver.unsubscribe(piece);
+            pool.checkIn(piece);
+            repaint();
+        }
+
     }
 
     public void turnPieceIntoKing(GamePiece piece) {

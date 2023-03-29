@@ -105,26 +105,34 @@ public class BasePiece implements GamePiece {
         // Calculate the moves that allow a take
         // Add the moves to take pieces diagonally
         ArrayList<Vector<Integer>> diagonalMoves = Utility.getDiagonalMoves();
-
+        System.out.println(getPosition());
         for (Vector<Integer> move : diagonalMoves) {
             Vector<Integer> target = new Vector<>();
             target.add(position.get(0));
             target.add(position.get(1));
-            target.set(0, position.get(0)+move.get(0)*2);
-            target.set(0, position.get(1)+move.get(1)*2);
+            target.set(0, position.get(0)+(move.get(0)*2));
+            target.set(1, position.get(1)+(move.get(1)*2));
+            System.out.println("AFTER TAKE TARGET " + target);
 
             Vector<Integer> toBeTakenPosition = new Vector<>();
             toBeTakenPosition.add(position.get(0));
             toBeTakenPosition.add(position.get(1));
             toBeTakenPosition.set(0, position.get(0)+move.get(0));
-            toBeTakenPosition.set(0, position.get(1)+move.get(1));
+            toBeTakenPosition.set(1, position.get(1)+move.get(1));
+            System.out.println("TO BE TAKEN " + toBeTakenPosition);
 
+            boolean possible = true;
             if (target.get(0) >= 0 && target.get(0) <= 7 && target.get(1) >= 0 && target.get(1) <= 7) {
-                for (GamePiece piece: pieces
-                     ) {
-                    if (piece.getPosition().equals(toBeTakenPosition) && piece.getColor() != this.getColor()) {
-                        legalTakeMoves.add(target);
+                for (GamePiece piece: pieces) {
+                    if (piece.getPosition().equals(target)) {
+                        possible = false;
                         break;
+                    }
+                    if (possible) {
+                        if (piece.getPosition().equals(toBeTakenPosition) && piece.getColor() != this.getColor()) {
+                            legalTakeMoves.add(target);
+                            break;
+                        }
                     }
                 }
             }
