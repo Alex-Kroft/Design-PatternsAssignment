@@ -3,6 +3,8 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Random;
 import java.util.Vector;
 
 public class Board extends JPanel implements MouseListener {
@@ -12,16 +14,23 @@ public class Board extends JPanel implements MouseListener {
     private BoardObserver boardObserver;
     private final int squareSize = 50;
     private final int boardSize = 8;
+    private boolean playerTurn;
+    private boolean isGameOver;
     private GamePiece selectedPiece;
     private ArrayList<Vector<Integer>> selectedPieceAvailableMoves;
 
     public Board() {
         pool = new PiecePool();
+    }
+
+    public void startGame() {
         acquirePieces();
         boardObserver = new BoardObserver(playerOnePieces, playerTwoPieces);
         givePiecesStartingPositions();
         addMouseListener(this);
         selectedPiece = null;
+        setPlayerTurn(true);
+        setGameOver(false);
         notifyObserver();
     }
 
@@ -49,8 +58,25 @@ public class Board extends JPanel implements MouseListener {
         this.pool = pool;
     }
 
+    public boolean isPlayerTurn() {
+        return playerTurn;
+    }
+
+    public void setPlayerTurn(boolean playerTurn) {
+        this.playerTurn = playerTurn;
+    }
+
+    public boolean isGameOver() {
+        return isGameOver;
+    }
+
+    public void setGameOver(boolean gameOver) {
+        isGameOver = gameOver;
+    }
+
     public void movePiece(GamePiece piece, Vector<Integer> target) {
         piece.move(target);
+        setPlayerTurn(false);
         notifyObserver();
     }
 
@@ -151,40 +177,75 @@ public class Board extends JPanel implements MouseListener {
         boardObserver.notifyOfMove();
     }
 
-    @Override
-    public void mouseClicked(MouseEvent e) {
-        // Get the x and y coordinates of the mouse click
-        int x = e.getX();
-        int y = e.getY();
-
-        // Calculate the square that was clicked on
-        int row = y / squareSize;
-        int col = x / squareSize;
-
-        Vector<Integer> clickPosition = new Vector<>();
-        clickPosition.add(col);
-        clickPosition.add(row);
-        System.out.println("clicked");
-
-        if (selectedPiece != null) {
-            if (selectedPieceAvailableMoves.contains(clickPosition)) {
-                movePiece(selectedPiece, clickPosition);
+    public void computerMove() {
+        HashMap<GamePiece, ArrayList<Vector<Integer>>> possibleMoves = new HashMap<>();
+        for (GamePiece piece: playerTwoPieces) {
+            if (!piece.getLegalTakeMoves().isEmpty()) {
+                possibleMoves.put(piece, piece.getLegalTakeMoves());
             }
-            selectedPiece = null;
-            selectedPieceAvailableMoves = null;
-        } else {
-            // Check if a piece was clicked
-            for (GamePiece piece : playerOnePieces) {
-                if (piece.getPosition().equals(clickPosition)) {
-                    selectedPiece = piece;
-                    selectedPieceAvailableMoves = new ArrayList<>();
-                    selectedPieceAvailableMoves.addAll(selectedPiece.getLegalNonTakeMoves());
-                    selectedPieceAvailableMoves.addAll(selectedPiece.getLegalTakeMoves());
-                    break;
+        }
+        if (possibleMoves.isEmpty()) {
+            for (GamePiece piece: playerTwoPieces) {
+                if (!piece.getLegalNonTakeMoves().isEmpty()) {
+                    possibleMoves.put(piece, piece.getLegalNonTakeMoves());
                 }
             }
         }
-        repaint();
+        if (possibleMoves.isEmpty()) {
+            System.out.println("Wow, guess you won");
+            setGameOver(true);
+        } else {
+            System.out.println("POSSIBLE MOVES");
+            System.out.println(possibleMoves);
+            int chosenPieceIndex = new Random().nextInt(possibleMoves.size());
+            GamePiece chosenPiece = (GamePiece) possibleMoves.keySet().toArray()[chosenPieceIndex];
+            ArrayList<Vector<Integer>> chosenPiecePossibleMoves = possibleMoves.get(chosenPiece);
+            Vector<Integer> chosenMove = chosenPiecePossibleMoves.get(new Random().nextInt(chosenPiecePossibleMoves.size()));
+            System.out.println("I WILL MOVE PIECE " + chosenPiece.getPosition() + " TO POSITION " + chosenMove);
+            movePiece(chosenPiece, chosenMove);
+            setPlayerTurn(true);
+        }
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        if (playerTurn) {
+            // Get the x and y coordinates of the mouse click
+            int x = e.getX();
+            int y = e.getY();
+
+            // Calculate the square that was clicked on
+            int row = y / squareSize;
+            int col = x / squareSize;
+
+            Vector<Integer> clickPosition = new Vector<>();
+            clickPosition.add(col);
+            clickPosition.add(row);
+            System.out.println("clicked");
+
+            if (selectedPiece != null) {
+                if (selectedPieceAvailableMoves.contains(clickPosition)) {
+                    //TODO Add a check here for whether this is a take or a regular move
+                    movePiece(selectedPiece, clickPosition);
+                    computerMove();
+                }
+                selectedPiece = null;
+                selectedPieceAvailableMoves = null;
+
+            } else {
+                // Check if a piece was clicked
+                for (GamePiece piece : playerOnePieces) {
+                    if (piece.getPosition().equals(clickPosition)) {
+                        selectedPiece = piece;
+                        selectedPieceAvailableMoves = new ArrayList<>();
+                        selectedPieceAvailableMoves.addAll(selectedPiece.getLegalNonTakeMoves());
+                        selectedPieceAvailableMoves.addAll(selectedPiece.getLegalTakeMoves());
+                        break;
+                    }
+                }
+            }
+            repaint();
+        }
     }
 
     @Override

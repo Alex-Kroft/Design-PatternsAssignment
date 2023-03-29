@@ -65,27 +65,13 @@ public class BasePiece implements GamePiece {
 
         // Calculate the moves that allow a take
         // Add the moves to take pieces diagonally
-        ArrayList<Vector<Integer>> diagonalMoves = new ArrayList<>();
+        ArrayList<Vector<Integer>> diagonalMoves = Utility.getDiagonalMoves();
         if (this.getColor() == PieceColor.BLACK) {
-            Vector<Integer> DR = new Vector<>();
-            DR.add(1);
-            DR.add(1);
-            diagonalMoves.add(DR);
-
-            Vector<Integer> DL = new Vector<>();
-            DL.add(-1);
-            DL.add(1);
-            diagonalMoves.add(DL);
+            diagonalMoves.remove(0);
+            diagonalMoves.remove(0);
         } else {
-            Vector<Integer> UL = new Vector<>();
-            UL.add(-1);
-            UL.add(-1);
-            diagonalMoves.add(UL);
-
-            Vector<Integer> UR = new Vector<>();
-            UR.add(1);
-            UR.add(-1);
-            diagonalMoves.add(UR);
+            diagonalMoves.remove(2);
+            diagonalMoves.remove(2);
         }
 
         for (Vector<Integer> move : diagonalMoves) {
@@ -118,27 +104,7 @@ public class BasePiece implements GamePiece {
 
         // Calculate the moves that allow a take
         // Add the moves to take pieces diagonally
-        ArrayList<Vector<Integer>> diagonalMoves = new ArrayList<>();
-
-        Vector<Integer> UL = new Vector<>();
-        UL.add(-1);
-        UL.add(-1);
-        diagonalMoves.add(UL);
-
-        Vector<Integer> UR = new Vector<>();
-        UR.add(-1);
-        UR.add(1);
-        diagonalMoves.add(UR);
-
-        Vector<Integer> DL = new Vector<>();
-        DL.add(1);
-        DL.add(-1);
-        diagonalMoves.add(DL);
-
-        Vector<Integer> DR = new Vector<>();
-        DR.add(1);
-        DR.add(1);
-        diagonalMoves.add(DR);
+        ArrayList<Vector<Integer>> diagonalMoves = Utility.getDiagonalMoves();
 
         for (Vector<Integer> move : diagonalMoves) {
             Vector<Integer> target = new Vector<>();

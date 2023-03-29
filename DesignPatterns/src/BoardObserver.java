@@ -12,6 +12,7 @@ public class BoardObserver {
     public void notifyOfMove() {
         boolean isTakePossible = false;
         for (GamePiece piece: pieces) {
+            piece.updateTakes(pieces);
             if (piece.updateTakes(pieces)) {
                 isTakePossible = true;
             }

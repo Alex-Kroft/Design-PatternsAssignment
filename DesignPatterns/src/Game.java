@@ -13,12 +13,8 @@ public class Game extends JFrame{
         setLayout(new BorderLayout());
         this.board = new Board();
         add(board, BorderLayout.CENTER);
+        board.startGame();
     }
-
-    public void init() {
-
-    }
-
 
 
 }
