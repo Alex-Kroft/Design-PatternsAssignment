@@ -10,18 +10,11 @@ public class BoardObserver {
     }
 
     public void notifyOfMove() {
-        boolean isTakePossible = false;
         for (GamePiece piece: pieces) {
+            piece.updateMoves(pieces);
             piece.updateTakes(pieces);
-            if (piece.updateTakes(pieces)) {
-                isTakePossible = true;
-            }
         }
-        if (!isTakePossible) {
-            for (GamePiece piece: pieces) {
-                piece.updateMoves(pieces);
-            }
-        }
+
     }
 
     public void unsubscribe(GamePiece piece) {

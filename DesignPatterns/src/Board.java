@@ -75,7 +75,6 @@ public class Board extends JPanel implements MouseListener {
         Vector<Integer> piecePosition = piece.getPosition();
         piece.move(target);
         removePieces(piecePosition, target);
-        setPlayerTurn(false);
         notifyObserver();
     }
 
@@ -104,20 +103,41 @@ public class Board extends JPanel implements MouseListener {
                 }
             }
 
+            for (GamePiece piece: playerTwoPieces) {
+                if (piece.getPosition().equals(remove)) {
+                    piecesToRemove.add(piece);
+                }
+            }
+
             x += deltaX;
             y += deltaY;
         }
 
-        for (GamePiece piece: piecesToRemove) {
-            boardObserver.unsubscribe(piece);
-            pool.checkIn(piece);
-            repaint();
+        if (!piecesToRemove.isEmpty()) {;
+            for (GamePiece piece: piecesToRemove) {
+                System.out.println(start);
+                System.out.println(finish);
+                System.out.println("REMOVING PIECE " + piece.getPosition());
+                boardObserver.unsubscribe(piece);
+                pool.checkIn(piece);
+                repaint();
+            }
+        } else {
+            changePlayerTurn();
         }
 
     }
 
     public void turnPieceIntoKing(GamePiece piece) {
 
+    }
+
+    public void changePlayerTurn() {
+        if (playerTurn) {
+            setPlayerTurn(false);
+        } else {
+            setPlayerTurn(true);
+        }
     }
 
     public void acquirePieces() {
@@ -226,15 +246,12 @@ public class Board extends JPanel implements MouseListener {
             System.out.println("Wow, guess you won");
             setGameOver(true);
         } else {
-            System.out.println("POSSIBLE MOVES");
-            System.out.println(possibleMoves);
+
             int chosenPieceIndex = new Random().nextInt(possibleMoves.size());
             GamePiece chosenPiece = (GamePiece) possibleMoves.keySet().toArray()[chosenPieceIndex];
             ArrayList<Vector<Integer>> chosenPiecePossibleMoves = possibleMoves.get(chosenPiece);
             Vector<Integer> chosenMove = chosenPiecePossibleMoves.get(new Random().nextInt(chosenPiecePossibleMoves.size()));
-            System.out.println("I WILL MOVE PIECE " + chosenPiece.getPosition() + " TO POSITION " + chosenMove);
             movePiece(chosenPiece, chosenMove);
-            setPlayerTurn(true);
         }
     }
 
@@ -256,9 +273,7 @@ public class Board extends JPanel implements MouseListener {
 
             if (selectedPiece != null) {
                 if (selectedPieceAvailableMoves.contains(clickPosition)) {
-                    //TODO Add a check here for whether this is a take or a regular move
                     movePiece(selectedPiece, clickPosition);
-                    computerMove();
                 }
                 selectedPiece = null;
                 selectedPieceAvailableMoves = null;
@@ -276,6 +291,8 @@ public class Board extends JPanel implements MouseListener {
                 }
             }
             repaint();
+        } else {
+            computerMove();
         }
     }
 
