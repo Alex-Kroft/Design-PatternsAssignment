@@ -25,6 +25,8 @@ public class Game extends JFrame{
         });
         buttonPanel.add(restartButton);
         add(buttonPanel, BorderLayout.SOUTH);
+        JLabel messageLabel = new JLabel("Keep clicking to progress the game. This includes both your and enemy moves");
+        add(messageLabel, BorderLayout.NORTH);
     }
 
     public void init() {

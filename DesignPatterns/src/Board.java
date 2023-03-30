@@ -90,15 +90,24 @@ public class Board extends JPanel implements MouseListener {
                 playerTwoPieces.remove(piece);
                 piece = new KingPiece((BasePiece) piece);
                 playerTwoPieces.add(piece);
+
+                notifyObserver();
+                if (!piece.getLegalTakeMoves().isEmpty()) {
+                    changePlayerTurn();
+                }
             }
         } else if (piece.getColor().equals(PieceColor.RED)) {
             if (target.get(1) == 0) {
                 playerOnePieces.remove(piece);
                 piece = new KingPiece((BasePiece) piece);
                 playerOnePieces.add(piece);
+
+                notifyObserver();
+                if (!piece.getLegalTakeMoves().isEmpty()) {
+                    changePlayerTurn();
+                }
             }
         }
-        System.out.println(piece);
     }
 
     private void removePieces(GamePiece pieceToMove, Vector<Integer> start, Vector<Integer> finish) {
@@ -320,11 +329,6 @@ public class Board extends JPanel implements MouseListener {
                 for (GamePiece piece : playerOnePieces) {
                     if (piece.getPosition().equals(clickPosition)) {
                         selectedPiece = piece;
-                        if (piece.isKing()) {
-                            System.out.println("KING MOVES");
-                            System.out.println(piece.getLegalTakeMoves());
-                            System.out.println(piece.getLegalNonTakeMoves());
-                        }
                         selectedPieceAvailableMoves = new ArrayList<>();
                         selectedPieceAvailableMoves.addAll(selectedPiece.getLegalNonTakeMoves());
                         selectedPieceAvailableMoves.addAll(selectedPiece.getLegalTakeMoves());

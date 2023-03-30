@@ -49,37 +49,28 @@ public class KingPiece extends BaseDecorator {
             target.set(1, target.get(1)+move.get(1));
             boolean pieceInTheWay = false;
             while (target.get(0) >= 0 && target.get(0) <= 7 && target.get(1) >= 0 && target.get(1) <= 7) {
-                System.out.println("CHECKING TARGET " + target);
-
                 boolean possible = true;
                 boolean blocked = false;
                 for (GamePiece piece: pieces) {
                     if (piece.getPosition().equals(target)) {
                         possible = false;
-                        System.out.println("THERE IS A PIECE AT THIS TARGET");
                         pieceInTheWay = true;
                         if (Utility.getTeamColor((piece.getColor())) == Utility.getTeamColor(this.getColor())) {
                             blocked = true;
-                            System.out.println("THIS PIECE IS FRIENDLY");
                         }
                         break;
                     }
                 }
                 if (blocked) {
-                    System.out.println("BECAUSE OF A FRIENDLY PIECE BEING IN THE WAY, I BREAK OUT OF THE LOOP");
                     break;
                 }
                 if (possible) {
                     Vector<Integer> place = new Vector<>();
                     place.add(target.get(0));
                     place.add(target.get(1));
-                    System.out.println("THIS MOVE IS POSSIBLE");
                     if (pieceInTheWay) {
-                        System.out.println("THIS MOVE WILL TAKE AT LEAST ONE ENEMY PIECE");
-
                         getWrappee().legalTakeMoves.add(place);
                     } else {
-                        System.out.println("THIS MOVE WON'T TAKE ANYTHING");
                         getWrappee().legalNonTakeMoves.add(place);
                     }
                 }
@@ -111,8 +102,6 @@ public class KingPiece extends BaseDecorator {
 
     @Override
     public boolean isKing() {
-        System.out.println(getWrappee());
-        System.out.println(getWrappee().getPosition());
         return true;
     }
 
