@@ -2,10 +2,10 @@ import java.util.ArrayList;
 import java.util.Vector;
 
 public class BasePiece implements GamePiece {
-    private Enum<PieceColor> color;
-    private Vector<Integer> position;
-    private ArrayList<Vector<Integer>> legalNonTakeMoves;
-    private ArrayList<Vector<Integer>> legalTakeMoves;
+    protected PieceColor color;
+    protected Vector<Integer> position;
+    protected ArrayList<Vector<Integer>> legalNonTakeMoves;
+    protected ArrayList<Vector<Integer>> legalTakeMoves;
 
 
     public BasePiece(PieceColor color){
@@ -17,11 +17,11 @@ public class BasePiece implements GamePiece {
         legalTakeMoves = new ArrayList<>();
     }
 
-    public Enum<PieceColor> getColor() {
+    public PieceColor getColor() {
         return color;
     }
 
-    public void setColor(Enum<PieceColor> color) {
+    public void setColor(PieceColor color) {
         this.color = color;
     }
 
@@ -50,8 +50,8 @@ public class BasePiece implements GamePiece {
     }
 
     @Override
-    public boolean updateTakes(ArrayList<GamePiece> pieces) {
-        return updateLegalTakeMoves(pieces);
+    public void updateTakes(ArrayList<GamePiece> pieces) {
+        updateLegalTakeMoves(pieces);
     }
 
     @Override
@@ -99,8 +99,9 @@ public class BasePiece implements GamePiece {
     }
 
     @Override
-    public boolean updateLegalTakeMoves(ArrayList<GamePiece> pieces) {
+    public void updateLegalTakeMoves(ArrayList<GamePiece> pieces) {
         legalTakeMoves.clear();
+        legalNonTakeMoves.clear();
 
         // Calculate the moves that allow a take
         // Add the moves to take pieces diagonally
@@ -112,30 +113,32 @@ public class BasePiece implements GamePiece {
             target.set(0, position.get(0)+(move.get(0)*2));
             target.set(1, position.get(1)+(move.get(1)*2));
 
+
             Vector<Integer> toBeTakenPosition = new Vector<>();
             toBeTakenPosition.add(position.get(0));
             toBeTakenPosition.add(position.get(1));
             toBeTakenPosition.set(0, position.get(0)+move.get(0));
             toBeTakenPosition.set(1, position.get(1)+move.get(1));
 
-
+            boolean takeable = false;
+            boolean blocked = false;
             if (target.get(0) >= 0 && target.get(0) <= 7 && target.get(1) >= 0 && target.get(1) <= 7) {
                 for (GamePiece piece: pieces) {
-                    boolean possible = true;
+                    PieceColor thisColor = Utility.getTeamColor(this.getColor());
+                    PieceColor targetColor = Utility.getTeamColor(piece.getColor());
+
+                    if (piece.getPosition().equals(toBeTakenPosition) && thisColor != targetColor) {
+                        takeable = true;
+                    }
                     if (piece.getPosition().equals(target)) {
-                        possible = false;
+                        blocked = true;
                         break;
                     }
-                    if (possible) {
-                        if (piece.getPosition().equals(toBeTakenPosition) && piece.getColor() != this.getColor()) {
-                            legalTakeMoves.add(target);
-                            break;
-                        }
-                    }
+                }
+                if (takeable && !blocked) {
+                    legalTakeMoves.add(target);
                 }
             }
         }
-
-        return !legalTakeMoves.isEmpty();
     }
 }

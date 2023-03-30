@@ -5,25 +5,27 @@ public interface GamePiece {
 
     void updateLegalNonTakeMoves(ArrayList<GamePiece> pieces);
 
-    boolean updateLegalTakeMoves(ArrayList<GamePiece> pieces);
+    void updateLegalTakeMoves(ArrayList<GamePiece> pieces);
 
     default void move(Vector<Integer> target) {
         setPosition(target);
     }
 
-    default boolean updateTakes(ArrayList<GamePiece> pieces) {
-        return false;
-    }
+    void updateTakes(ArrayList<GamePiece> pieces);
 
-    default void updateMoves(ArrayList<GamePiece> pieces) {
-
-    }
+    void updateMoves(ArrayList<GamePiece> pieces);
 
     Vector<Integer> getPosition();
 
     void setPosition(Vector<Integer> position);
 
-    Enum<PieceColor> getColor();
+    PieceColor getColor();
+
+    void setColor(PieceColor color);
+
+    default public boolean isKing() {
+        return false;
+    }
 
     ArrayList<Vector<Integer>> getLegalNonTakeMoves();
 

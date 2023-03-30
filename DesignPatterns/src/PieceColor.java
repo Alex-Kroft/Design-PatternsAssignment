@@ -1,4 +1,8 @@
+import java.awt.*;
+
 public enum PieceColor {
     RED,
-    BLACK
+    DARK_RED,
+    BLACK,
+    DARK_GRAY
 }

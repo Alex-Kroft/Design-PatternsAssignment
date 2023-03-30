@@ -18,13 +18,27 @@ public class Board extends JPanel implements MouseListener {
 
     public Board() {
         pool = new PiecePool();
+        boardObserver = null;
+        addMouseListener(this);
+        playerOnePieces = new ArrayList<>();
+        playerTwoPieces = new ArrayList<>();
     }
 
     public void startGame() {
+        playerOnePieces.clear();
+        playerTwoPieces.clear();
         acquirePieces();
-        boardObserver = new BoardObserver(playerOnePieces, playerTwoPieces);
-        givePiecesStartingPositions();
-        addMouseListener(this);
+        if (boardObserver == null) {
+            boardObserver = new BoardObserver(playerOnePieces, playerTwoPieces);
+        } else {
+            boardObserver.subscribePlayers(playerOnePieces, playerTwoPieces);
+        }
+        setPiecesForStartOfGame();
+        System.out.println("AFTER ASSIGNING SPACES");
+        for (GamePiece piece: playerOnePieces) {
+            System.out.print(piece.getPosition());
+        }
+        System.out.println();
         selectedPiece = null;
         setPlayerTurn(true);
         setGameOver(false);
@@ -74,11 +88,20 @@ public class Board extends JPanel implements MouseListener {
     public void movePiece(GamePiece piece, Vector<Integer> target) {
         Vector<Integer> piecePosition = piece.getPosition();
         piece.move(target);
-        removePieces(piecePosition, target);
-        notifyObserver();
+        removePieces(piece, piecePosition, target);
+
+        if (piece.getColor().equals(PieceColor.BLACK)) {
+            if (target.get(1) == 7) {
+                piece = new KingPiece((BasePiece) piece);
+            }
+        } else if (piece.getColor().equals(PieceColor.RED)) {
+            if (target.get(1) == 0) {
+                piece = new KingPiece((BasePiece) piece);
+            }
+        }
     }
 
-    private void removePieces(Vector<Integer> start, Vector<Integer> finish) {
+    private void removePieces(GamePiece pieceToMove, Vector<Integer> start, Vector<Integer> finish) {
         int startX = start.get(0);
         int startY = start.get(1);
         int finishX = finish.get(0);
@@ -113,39 +136,48 @@ public class Board extends JPanel implements MouseListener {
             y += deltaY;
         }
 
-        if (!piecesToRemove.isEmpty()) {;
+        if (!piecesToRemove.isEmpty()) {
             for (GamePiece piece: piecesToRemove) {
-                System.out.println(start);
-                System.out.println(finish);
                 System.out.println("REMOVING PIECE " + piece.getPosition());
+                playerOnePieces.remove(piece);
+                playerTwoPieces.remove(piece);
+
                 boardObserver.unsubscribe(piece);
                 pool.checkIn(piece);
                 repaint();
             }
+            ArrayList<GamePiece> allPieces = new ArrayList<>();
+            allPieces.addAll(playerOnePieces);
+            allPieces.addAll(playerTwoPieces);
+            pieceToMove.updateTakes(allPieces);
+
+            if (pieceToMove.getLegalTakeMoves().isEmpty()) {
+                changePlayerTurn();
+                notifyObserver();
+            } else {
+                if (playerOnePieces.contains(pieceToMove)) {
+                    selectedPiece = pieceToMove;
+                    selectedPieceAvailableMoves = pieceToMove.getLegalTakeMoves();
+                }
+            }
+
         } else {
             changePlayerTurn();
+            notifyObserver();
         }
-
-    }
-
-    public void turnPieceIntoKing(GamePiece piece) {
 
     }
 
     public void changePlayerTurn() {
-        if (playerTurn) {
-            setPlayerTurn(false);
-        } else {
-            setPlayerTurn(true);
-        }
+        setPlayerTurn(!playerTurn);
     }
 
     public void acquirePieces() {
-        playerOnePieces = pool.acquirePlayerOnePieces();
-        playerTwoPieces = pool.acquirePlayerTwoPieces();
+        playerOnePieces.addAll(pool.acquirePlayerOnePieces());
+        playerTwoPieces.addAll(pool.acquirePlayerTwoPieces());
     }
 
-    private void givePiecesStartingPositions() {
+    private void setPiecesForStartOfGame() {
         int placingIndex = 0;
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 4; j++) {
@@ -163,6 +195,8 @@ public class Board extends JPanel implements MouseListener {
 
                 playerTwoPieces.get(placingIndex).setPosition(position1);
                 playerOnePieces.get(placingIndex).setPosition(position2);
+                playerTwoPieces.get(placingIndex).setColor(PieceColor.BLACK);
+                playerOnePieces.get(placingIndex).setColor(PieceColor.RED);
 
                 placingIndex++;
             }
@@ -217,15 +251,22 @@ public class Board extends JPanel implements MouseListener {
             Enum<PieceColor> color = piece.getColor();
             if (color == PieceColor.BLACK) {
                 g.setColor(Color.BLACK);
-            } else {
+            }
+            if (color == PieceColor.DARK_GRAY) {
+                g.setColor(Color.DARK_GRAY);
+            }
+            if (color == PieceColor.RED) {
                 g.setColor(Color.RED);
+            }
+            if (color == PieceColor.DARK_RED) {
+                g.setColor(new Color(200, 0, 0));
             }
             g.fillOval(x, y, squareSize, squareSize);
         }
     }
 
     public void notifyObserver() {
-        boardObserver.notifyOfMove();
+        boardObserver.notifyOfMove(playerTurn);
     }
 
     public void computerMove() {
@@ -269,7 +310,6 @@ public class Board extends JPanel implements MouseListener {
             Vector<Integer> clickPosition = new Vector<>();
             clickPosition.add(col);
             clickPosition.add(row);
-            System.out.println("clicked");
 
             if (selectedPiece != null) {
                 if (selectedPieceAvailableMoves.contains(clickPosition)) {

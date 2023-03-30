@@ -31,4 +31,14 @@ public class Utility {
 
         return diagonalMoves;
     }
+
+    public static PieceColor getTeamColor(PieceColor color) {
+        if (color == PieceColor.DARK_RED) {
+            color = PieceColor.RED;
+        }
+        if (color == PieceColor.DARK_GRAY) {
+            color = PieceColor.BLACK;
+        }
+        return color;
+    }
 }

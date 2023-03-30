@@ -15,35 +15,33 @@ public class PiecePool {
         } else if (playerTwoPiecesInUse.contains(piece)) {
             playerTwoPiecesInUse.remove(piece);
             playerTwoPiecesAvailable.add(piece);
-        } else {
-            throw new NoSuchElementException();
         }
     }
 
     public synchronized ArrayList<GamePiece> acquirePlayerOnePieces() {
-        if(playerOnePiecesInUse.isEmpty()) {
-            if(playerOnePiecesAvailable.isEmpty()) {
-                for (int i = 0; i < 12; i++) {
-                    playerOnePiecesInUse.add(PieceFactory.getGamePiece(PieceColor.RED));
-                }
-            } else {
-                playerOnePiecesInUse = playerOnePiecesAvailable;
+        System.out.println(playerOnePiecesInUse.size() + "---" + playerOnePiecesAvailable.size());
+        if(playerOnePiecesAvailable.isEmpty() && playerOnePiecesInUse.isEmpty()) {
+            for (int i = 0; i < 12; i++) {
+                playerOnePiecesInUse.add(new KingPiece((BasePiece) PieceFactory.getGamePiece(PieceColor.RED)));
             }
         }
-
+        playerOnePiecesInUse.addAll(playerOnePiecesAvailable);
+        playerOnePiecesAvailable.clear();
+        for (GamePiece piece: playerOnePiecesInUse) {
+            System.out.print(piece.getPosition());
+        }
+        System.out.println();
         return playerOnePiecesInUse;
     }
 
     public synchronized ArrayList<GamePiece> acquirePlayerTwoPieces() {
-        if(playerTwoPiecesInUse.isEmpty()) {
-            if(playerTwoPiecesAvailable.isEmpty()) {
-                for (int i = 0; i < 12; i++) {
-                    playerTwoPiecesInUse.add(PieceFactory.getGamePiece(PieceColor.BLACK));
-                }
-            } else {
-                playerTwoPiecesInUse = playerTwoPiecesAvailable;
+        if(playerTwoPiecesAvailable.isEmpty() && playerTwoPiecesInUse.isEmpty()) {
+            for (int i = 0; i < 12; i++) {
+                playerTwoPiecesInUse.add(PieceFactory.getGamePiece(PieceColor.BLACK));
             }
         }
+        playerTwoPiecesInUse.addAll(playerTwoPiecesAvailable);
+        playerTwoPiecesAvailable.clear();
         return playerTwoPiecesInUse;
     }
 

@@ -8,4 +8,6 @@ public abstract class BaseDecorator implements GamePiece {
     public BasePiece getWrappee() {
         return wrappee;
     }
+
+    public abstract boolean isKing();
 }

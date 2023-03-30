@@ -13,8 +13,21 @@ public class Game extends JFrame{
         setLayout(new BorderLayout());
         this.board = new Board();
         add(board, BorderLayout.CENTER);
-        board.startGame();
+        init();
+
+        JPanel buttonPanel = new JPanel();
+        JButton restartButton = new JButton("Restart");
+        restartButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                init();
+                board.repaint();
+            }
+        });
+        buttonPanel.add(restartButton);
+        add(buttonPanel, BorderLayout.SOUTH);
     }
 
-
+    public void init() {
+        board.startGame();
+    }
 }
