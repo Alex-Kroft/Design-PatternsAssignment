@@ -259,7 +259,7 @@ public class Board extends JPanel implements MouseListener {
                 g.setColor(Color.BLACK);
             }
             if (color == PieceColor.DARK_GRAY) {
-                g.setColor(Color.DARK_GRAY);
+                g.setColor(new Color(10, 0, 25, 128));
             }
             if (color == PieceColor.RED) {
                 g.setColor(Color.RED);
