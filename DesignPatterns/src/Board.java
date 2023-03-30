@@ -34,11 +34,6 @@ public class Board extends JPanel implements MouseListener {
             boardObserver.subscribePlayers(playerOnePieces, playerTwoPieces);
         }
         setPiecesForStartOfGame();
-        System.out.println("AFTER ASSIGNING SPACES");
-        for (GamePiece piece: playerOnePieces) {
-            System.out.print(piece.getPosition());
-        }
-        System.out.println();
         selectedPiece = null;
         setPlayerTurn(true);
         setGameOver(false);
@@ -92,13 +87,18 @@ public class Board extends JPanel implements MouseListener {
 
         if (piece.getColor().equals(PieceColor.BLACK)) {
             if (target.get(1) == 7) {
+                playerTwoPieces.remove(piece);
                 piece = new KingPiece((BasePiece) piece);
+                playerTwoPieces.add(piece);
             }
         } else if (piece.getColor().equals(PieceColor.RED)) {
             if (target.get(1) == 0) {
+                playerOnePieces.remove(piece);
                 piece = new KingPiece((BasePiece) piece);
+                playerOnePieces.add(piece);
             }
         }
+        System.out.println(piece);
     }
 
     private void removePieces(GamePiece pieceToMove, Vector<Integer> start, Vector<Integer> finish) {
@@ -138,11 +138,8 @@ public class Board extends JPanel implements MouseListener {
 
         if (!piecesToRemove.isEmpty()) {
             for (GamePiece piece: piecesToRemove) {
-                System.out.println("REMOVING PIECE " + piece.getPosition());
                 playerOnePieces.remove(piece);
                 playerTwoPieces.remove(piece);
-
-                boardObserver.unsubscribe(piece);
                 pool.checkIn(piece);
                 repaint();
             }
@@ -266,7 +263,7 @@ public class Board extends JPanel implements MouseListener {
     }
 
     public void notifyObserver() {
-        boardObserver.notifyOfMove(playerTurn);
+        boardObserver.notifyOfMove();
     }
 
     public void computerMove() {
@@ -323,6 +320,11 @@ public class Board extends JPanel implements MouseListener {
                 for (GamePiece piece : playerOnePieces) {
                     if (piece.getPosition().equals(clickPosition)) {
                         selectedPiece = piece;
+                        if (piece.isKing()) {
+                            System.out.println("KING MOVES");
+                            System.out.println(piece.getLegalTakeMoves());
+                            System.out.println(piece.getLegalNonTakeMoves());
+                        }
                         selectedPieceAvailableMoves = new ArrayList<>();
                         selectedPieceAvailableMoves.addAll(selectedPiece.getLegalNonTakeMoves());
                         selectedPieceAvailableMoves.addAll(selectedPiece.getLegalTakeMoves());

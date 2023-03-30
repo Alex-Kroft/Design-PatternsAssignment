@@ -7,9 +7,7 @@ public interface GamePiece {
 
     void updateLegalTakeMoves(ArrayList<GamePiece> pieces);
 
-    default void move(Vector<Integer> target) {
-        setPosition(target);
-    }
+    void move(Vector<Integer> target);
 
     void updateTakes(ArrayList<GamePiece> pieces);
 

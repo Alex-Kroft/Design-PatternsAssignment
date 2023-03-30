@@ -19,18 +19,13 @@ public class PiecePool {
     }
 
     public synchronized ArrayList<GamePiece> acquirePlayerOnePieces() {
-        System.out.println(playerOnePiecesInUse.size() + "---" + playerOnePiecesAvailable.size());
         if(playerOnePiecesAvailable.isEmpty() && playerOnePiecesInUse.isEmpty()) {
             for (int i = 0; i < 12; i++) {
-                playerOnePiecesInUse.add(new KingPiece((BasePiece) PieceFactory.getGamePiece(PieceColor.RED)));
+                playerOnePiecesInUse.add(PieceFactory.getGamePiece(PieceColor.RED));
             }
         }
         playerOnePiecesInUse.addAll(playerOnePiecesAvailable);
         playerOnePiecesAvailable.clear();
-        for (GamePiece piece: playerOnePiecesInUse) {
-            System.out.print(piece.getPosition());
-        }
-        System.out.println();
         return playerOnePiecesInUse;
     }
 

@@ -141,4 +141,9 @@ public class BasePiece implements GamePiece {
             }
         }
     }
+
+    @Override
+    public void move(Vector<Integer> target) {
+        setPosition(target);
+    }
 }
